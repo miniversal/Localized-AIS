@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js" ></script>
+       <script>
+       $(document).ready(function(){
+            setTimeout(function(){
+              window.location.reload(1);
+            }, 120000);
+            $.ajax({
+                url: 'http://ais.boatnerd.com/ship-data.jsonp-alt.php?callback=?',
+                dataType: 'jsonp',
+                success: function(aisData){
+                    var text = '';
+                    var len = aisData.length;
+                    for(var i=0;i<len;i++){
+                        boat = aisData[i];
+                        inLatRange = false;
+                        inLngRange = false;
+                        showBoat = false;
+                        style = "";
+                        if(boat.lat > 41.5000 && boat.lat < 41.8000){
+                          //console.log(boat.name +' inLatRange')
+                        	inLatRange = true;
+                        }
+                        if(boat.lng > -83.6000 && boat.lng < -83.2000){
+                          console.log(boat.name +' inLngRange')
+                          inLngRange = true;
+                        }
+                        switch(boat.type){
+                          case "Freighter":
+                            showBoat = true;
+                            break;
+                          case "Tug":
+                            showBoat = true;
+                            break;
+                          default:
+                            break;
+                        }
+                        style+=(inLatRange && inLngRange) ? " in-range ":"";
+                        style+=(showBoat && inLatRange && inLngRange) ? " show-boat " : "";
+                        text += '<li class=\"' + style + '\">' + boat.name + '<br />' +  boat.destination + '<br />' +  boat.lat +'/' + boat.lng + '</li>';
+                    }
+                    $('#feed').html(text);
+                }
+            });
+        })
+       </script>
+       <style>
+       html { background:#333; }
+       #feed { list-style-type:none;margin:0;color:#ec3; }
+       #feed li { border:solid 0.25em #000;border-radius:0.5em;padding:0.5em;float:left;margin:1em;width:18%;display:none;visibility:hidden; }
+       #feed li.show-boat { display:inline;visibility:visible; }
+       #feed li.in-range { background-color:blue; }
+        
+       </style>
+    </head>
+<body>
+<ul id="feed"></ul>
+</body>
+</html>
